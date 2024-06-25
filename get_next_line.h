@@ -13,7 +13,7 @@
 # define GET_NEXT_LINE_H
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 420
+#  define BUFFER_SIZE 42
 # endif
 
 # include <unistd.h>
@@ -21,9 +21,12 @@
 
 /* GNL */
 char	*get_next_line(int fd);
+char	*getline(char **stored);
+char	*readstore(int fd, char *stored);
 
 /* GNL UTILS */
 char	*ft_strjoin(const char *s1, const char *s2);
 char	*ft_strchr(const char *s, int c);
 size_t	ft_strlen(const char *s);
+
 #endif
