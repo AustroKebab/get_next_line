@@ -6,10 +6,13 @@
 /*   By: mbozan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 14:56:37 by mbozan            #+#    #+#             */
-/*   Updated: 2024/08/05 12:09:40 by mbozan           ###   ########.fr       */
+/*   Updated: 2024/08/05 17:28:10 by mbozan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
+#include <stdio.h>
+#define DEBUG_ALLOC(ptr) printf("ALLOCATED: %p\n", (void *)(ptr))
+#define DEBUG_FREE(ptr) printf("FREED: %p\n", (void *)(ptr))
 
 size_t	ft_strlen(const char *s)
 {
@@ -30,8 +33,9 @@ char	*ft_strjoin(char *s1, char *s2)
 	if (!s1 || !s2)
 		return (NULL);
 	new_str = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+	DEBUG_ALLOC(new_str);
 	if (!new_str)
-		return (free(s1), NULL);
+		return (free(s1), DEBUG_FREE(s1), NULL);
 	i = 0;
 	while (s1[i])
 	{
@@ -46,6 +50,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	}
 	new_str[i + j] = '\0';
 	free(s1);
+	DEBUG_FREE(s1);
 	return (new_str);
 }
 
@@ -57,6 +62,7 @@ char	*ft_strdup(const char *s1)
 	if (!s1)
 		return (NULL);
 	copy = (char *)malloc(ft_strlen(s1) + 1);
+	DEBUG_ALLOC(copy);
 	if (!copy)
 		return (NULL);
 	i = 0;
@@ -96,7 +102,7 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 	}
 	if (size > 0)
 		dst[i] = 0;
-	while (src[i] != '\0')
+	while (src[i])
 		++i;
 	return (i);
 }
