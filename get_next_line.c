@@ -6,69 +6,94 @@
 /*   By: mbozan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 14:55:14 by mbozan            #+#    #+#             */
-/*   Updated: 2024/06/23 18:20:21 by mbozan           ###   ########.fr       */
+/*   Updated: 2024/08/05 12:08:59 by mbozan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
 
-char	*getline(char **stored)
+char	*extractline(char **storage)
 {
 	char	*line;
-	char	*tmp;
+	char	*nlinepos;
+	char	*temp;
 	size_t	len;
 
-	len = 0;
-	while ((*stored)[len] && (*stored)[len] != '\n')
-		len++;
-	if ((*stored)[len] == '\n')
-		len++;
-	line = malloc(len + 1);
-	if (!line)
-		return (NULL);
-	line[len] = '\0';
-	while (len--)
-		line[len] = (*stored)[len];
-	tmp = ft_strjoin(*stored + len, "");
-	free(*stored);
-	*stored = tmp;
+	nlinepos = ft_strchr(*storage, '\n');
+	if (nlinepos)
+	{
+		len = nlinepos - *storage + 1;
+		line = (char *)malloc(len + 1);
+		if (!line)
+			return (NULL);
+		ft_strlcpy(line, *storage, len + 1);
+		temp = ft_strdup(nlinepos + 1);
+	}
+	else
+	{
+		line = ft_strdup(*storage);
+		temp = NULL;
+	}
+	free(*storage);
+	*storage = temp;
 	return (line);
 }
 
-char	*readstore(int fd, char *stored)
+ssize_t	readstore(int fd, char **storage)
 {
-	char		*buffer;
-	char		*tmp;
-	ssize_t		bytes;
+	char	*buffer;
+	char	*temp;
+	ssize_t	bytes_read;
 
-	buffer = malloc(BUFFER_SIZE + 1);
+	buffer = (char *)malloc(BUFFER_SIZE + 1);
 	if (!buffer)
-		return (NULL);
-	bytes = 1;
-	while (!ft_strchr(stored, '\n') && bytes > 0)
+		return (-1);
+	bytes_read = read(fd, buffer, BUFFER_SIZE);
+	if (bytes_read > 0)
 	{
-		bytes = read(fd, buffer, BUFFER_SIZE);
-		if (bytes < 0)
+		buffer[bytes_read] = '\0';
+		temp = ft_strjoin(*storage, buffer);
+		if (!temp)
 		{
 			free(buffer);
-			return (NULL);
+			return (-1);
 		}
-		buffer[bytes] = '\0';
-		tmp = ft_strjoin(stored, buffer);
-		free(stored);
-		stored = tmp;
+		*storage = temp;
 	}
 	free(buffer);
-	return (stored);
+	return (bytes_read);
+}
+
+static void	storefree(char **nullstore)
+{
+	if (nullstore && *nullstore)
+	{
+		free(*nullstore);
+		*nullstore = NULL;
+	}
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stored;
+	static char	*storage;
+	char		*line;
+	ssize_t		bytes_read;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	stored = readstore(fd, stored);
-	if (!stored || !*stored)
-		return (NULL);
-	return (getline(&stored));
+	if (!storage)
+	{
+		storage = ft_strdup("");
+		if (!storage)
+			return (NULL);
+	}
+	while (!ft_strchr(storage, '\n'))
+	{
+		bytes_read = readstore(fd, &storage);
+		if (bytes_read < 0 || (bytes_read == 0 && !*storage))
+			return (storefree(&storage), NULL);
+		if (bytes_read == 0)
+			break ;
+	}
+	line = extractline(&storage);
+	return (line);
 }

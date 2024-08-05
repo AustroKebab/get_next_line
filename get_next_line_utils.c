@@ -6,7 +6,7 @@
 /*   By: mbozan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 14:56:37 by mbozan            #+#    #+#             */
-/*   Updated: 2024/06/23 17:31:59 by mbozan           ###   ########.fr       */
+/*   Updated: 2024/08/05 12:09:40 by mbozan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
@@ -21,41 +21,82 @@ size_t	ft_strlen(const char *s)
 	return (len);
 }
 
+char	*ft_strjoin(char *s1, char *s2)
+{
+	char	*new_str;
+	size_t	i;
+	size_t	j;
+
+	if (!s1 || !s2)
+		return (NULL);
+	new_str = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+	if (!new_str)
+		return (free(s1), NULL);
+	i = 0;
+	while (s1[i])
+	{
+		new_str[i] = s1[i];
+		i++;
+	}
+	j = 0;
+	while (s2[j])
+	{
+		new_str[i + j] = s2[j];
+		j++;
+	}
+	new_str[i + j] = '\0';
+	free(s1);
+	return (new_str);
+}
+
+char	*ft_strdup(const char *s1)
+{
+	char	*copy;
+	size_t	i;
+
+	if (!s1)
+		return (NULL);
+	copy = (char *)malloc(ft_strlen(s1) + 1);
+	if (!copy)
+		return (NULL);
+	i = 0;
+	while (s1[i])
+	{
+		copy[i] = s1[i];
+		i++;
+	}
+	copy[i] = '\0';
+	return (copy);
+}
+
 char	*ft_strchr(const char *s, int c)
 {
-	while (*s)
+	while (s && *s)
 	{
 		if (*s == (char)c)
 			return ((char *)s);
 		s++;
 	}
+	if (s && *s == (char)c)
+		return ((char *)s);
 	return (NULL);
 }
 
-char	*ft_strjoin(const char *s1, const char *s2)
+size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 {
-	char	*news;
 	size_t	i;
-	size_t	i2;
 
-	if (!s1 || !s2)
-		return (NULL);
-	news = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!news)
-		return (NULL);
+	if (size == 0)
+		return (ft_strlen(src));
 	i = 0;
-	while (s1[i])
+	while (src[i] != '\0' && i < size -1)
 	{
-		news[i] = s1[i];
-		i++;
+		dst[i] = src[i];
+		++i;
 	}
-	i2 = 0;
-	while (s2[i2])
-	{
-		news[i + i2] = s2[i2];
-		i++;
-		i2++;
-	}
-	news[i + i2] = '\0';
-	return (news);
+	if (size > 0)
+		dst[i] = 0;
+	while (src[i] != '\0')
+		++i;
+	return (i);
 }

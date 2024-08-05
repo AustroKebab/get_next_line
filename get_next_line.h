@@ -6,7 +6,7 @@
 /*   By: mbozan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 14:58:35 by mbozan            #+#    #+#             */
-/*   Updated: 2024/06/23 16:54:01 by mbozan           ###   ########.fr       */
+/*   Updated: 2024/08/05 12:09:23 by mbozan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef GET_NEXT_LINE_H
@@ -21,12 +21,14 @@
 
 /* GNL */
 char	*get_next_line(int fd);
-char	*getline(char **stored);
-char	*readstore(int fd, char *stored);
+char	*extractline(char **storage);
+ssize_t	readstore(int fd, char **storage);
 
 /* GNL UTILS */
-char	*ft_strjoin(const char *s1, const char *s2);
+char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strchr(const char *s, int c);
+char	*ft_strdup(const char *s1);
 size_t	ft_strlen(const char *s);
+size_t	ft_strlcpy(char *dst, const char *src, size_t size);
 
 #endif
