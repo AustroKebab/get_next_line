@@ -6,54 +6,57 @@
 /*   By: mbozan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 14:55:14 by mbozan            #+#    #+#             */
-/*   Updated: 2024/08/05 17:27:45 by mbozan           ###   ########.fr       */
+/*   Updated: 2024/08/08 18:03:21 by mbozan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
 #include <stdio.h>
-#define DEBUG_ALLOC(ptr) printf("ALLOCATED: %p\n", (void *)(ptr))
-#define DEBUG_FREE(ptr) printf("FREED: %p\n", (void *)(ptr))
 
-static char	*extractline(char **storage)
+void	nullfree(char **tofree)
+{
+	if (!tofree || !*tofree)
+		return ;
+	free(*tofree);
+	*tofree = NULL;
+}
+
+char	*extractline(char **storage)
 {
 	char	*line;
 	char	*nlinepos;
 	char	*temp;
-	size_t	len;
 
+	if (!storage || !*storage)
+		return (NULL);
 	nlinepos = ft_strchr(*storage, '\n');
 	if (nlinepos)
 	{
-		len = nlinepos - *storage + 1;
-		line = (char *)malloc(len + 1);
-		DEBUG_ALLOC(line);
+		line = (char *)malloc(nlinepos - *storage + 2);
 		if (!line)
 			return (NULL);
-		ft_strlcpy(line, *storage, len + 1);
+		ft_strlcpy(line, *storage, nlinepos - *storage + 2);
 		temp = ft_strdup(nlinepos + 1);
-		DEBUG_ALLOC(temp);
 		if (!temp)
-			return (free(line), DEBUG_FREE(line), NULL);
+			return (nullfree(&line), NULL);
 	}
 	else
 	{
 		line = ft_strdup(*storage);
 		temp = NULL;
 	}
-	free(*storage);
-	DEBUG_FREE(*storage);
-	*storage = temp;
-	return (line);
+	nullfree(storage);
+	return ((*storage = temp), line);
 }
 
-static ssize_t	readstore(int fd, char **storage)
+ssize_t	readstore(int fd, char **storage)
 {
 	char	*buffer;
 	char	*temp;
 	ssize_t	bytes_read;
 
+	if (!storage)
+		return (-1);
 	buffer = (char *)malloc(BUFFER_SIZE + 1);
-	DEBUG_ALLOC(buffer);
 	if (!buffer)
 		return (-1);
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
@@ -61,29 +64,17 @@ static ssize_t	readstore(int fd, char **storage)
 	{
 		buffer[bytes_read] = '\0';
 		temp = ft_strjoin(*storage, buffer);
-		DEBUG_ALLOC(temp);
 		if (!temp)
-			return (free(buffer), DEBUG_FREE(buffer), -1);
+			return (nullfree(&buffer), -1);
 		*storage = temp;
 	}
-	free(buffer);
-	DEBUG_FREE(buffer);
+	nullfree(&buffer);
 	return (bytes_read);
-}
-
-static void	storefree(char **nullstore)
-{
-	if (nullstore && *nullstore)
-	{
-		free(*nullstore);
-		DEBUG_FREE(*nullstore);
-		*nullstore = NULL;
-	}
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*storage;
+	static char	*storage = NULL;
 	char		*line;
 	ssize_t		bytes_read;
 
@@ -92,7 +83,6 @@ char	*get_next_line(int fd)
 	if (!storage)
 	{
 		storage = ft_strdup("");
-		DEBUG_ALLOC(storage);
 		if (!storage)
 			return (NULL);
 	}
@@ -100,7 +90,7 @@ char	*get_next_line(int fd)
 	{
 		bytes_read = readstore(fd, &storage);
 		if (bytes_read < 0 || (bytes_read == 0 && !*storage))
-			return (storefree(&storage), NULL);
+			return (nullfree(&storage), NULL);
 		if (bytes_read == 0)
 			break ;
 	}

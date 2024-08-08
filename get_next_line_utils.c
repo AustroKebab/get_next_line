@@ -6,13 +6,11 @@
 /*   By: mbozan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 14:56:37 by mbozan            #+#    #+#             */
-/*   Updated: 2024/08/05 17:28:10 by mbozan           ###   ########.fr       */
+/*   Updated: 2024/08/08 17:05:26 by mbozan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
 #include <stdio.h>
-#define DEBUG_ALLOC(ptr) printf("ALLOCATED: %p\n", (void *)(ptr))
-#define DEBUG_FREE(ptr) printf("FREED: %p\n", (void *)(ptr))
 
 size_t	ft_strlen(const char *s)
 {
@@ -24,22 +22,21 @@ size_t	ft_strlen(const char *s)
 	return (len);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin(char *storage, char *s2)
 {
 	char	*new_str;
 	size_t	i;
 	size_t	j;
 
-	if (!s1 || !s2)
+	if (!storage || !s2)
 		return (NULL);
-	new_str = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	DEBUG_ALLOC(new_str);
+	new_str = (char *)malloc(ft_strlen(storage) + ft_strlen(s2) + 1);
 	if (!new_str)
-		return (free(s1), DEBUG_FREE(s1), NULL);
+		return (NULL);
 	i = 0;
-	while (s1[i])
+	while (storage[i])
 	{
-		new_str[i] = s1[i];
+		new_str[i] = storage[i];
 		i++;
 	}
 	j = 0;
@@ -49,8 +46,7 @@ char	*ft_strjoin(char *s1, char *s2)
 		j++;
 	}
 	new_str[i + j] = '\0';
-	free(s1);
-	DEBUG_FREE(s1);
+	nullfree(&storage);
 	return (new_str);
 }
 
@@ -62,7 +58,6 @@ char	*ft_strdup(const char *s1)
 	if (!s1)
 		return (NULL);
 	copy = (char *)malloc(ft_strlen(s1) + 1);
-	DEBUG_ALLOC(copy);
 	if (!copy)
 		return (NULL);
 	i = 0;
@@ -77,6 +72,8 @@ char	*ft_strdup(const char *s1)
 
 char	*ft_strchr(const char *s, int c)
 {
+	if (!s || !c)
+		return (NULL);
 	while (s && *s)
 	{
 		if (*s == (char)c)
