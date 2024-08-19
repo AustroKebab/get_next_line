@@ -6,11 +6,10 @@
 /*   By: mbozan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 14:56:37 by mbozan            #+#    #+#             */
-/*   Updated: 2024/08/08 17:05:26 by mbozan           ###   ########.fr       */
+/*   Updated: 2024/08/08 19:29:46 by mbozan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
-#include <stdio.h>
 
 size_t	ft_strlen(const char *s)
 {
