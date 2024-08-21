@@ -6,7 +6,7 @@
 /*   By: mbozan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 14:55:14 by mbozan            #+#    #+#             */
-/*   Updated: 2024/08/19 14:53:29 by mbozan           ###   ########.fr       */
+/*   Updated: 2024/08/21 23:19:18 by austrokebab      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
@@ -36,7 +36,7 @@ char	*extractline(char **storage)
 		ft_strlcpy(line, *storage, nlinepos - *storage + 2);
 		temp = ft_strdup(nlinepos + 1);
 		if (!temp)
-			return (nullfree(&line), NULL);
+			return (nullfree(&line), nullfree(storage), NULL);
 	}
 	else
 	{

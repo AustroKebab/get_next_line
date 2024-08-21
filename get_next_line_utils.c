@@ -6,7 +6,7 @@
 /*   By: mbozan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 14:56:37 by mbozan            #+#    #+#             */
-/*   Updated: 2024/08/08 19:29:46 by mbozan           ###   ########.fr       */
+/*   Updated: 2024/08/21 23:16:52 by austrokebab      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
@@ -45,7 +45,8 @@ char	*ft_strjoin(char *storage, char *s2)
 		j++;
 	}
 	new_str[i + j] = '\0';
-	nullfree(&storage);
+	if (new_str)
+		nullfree(&storage);
 	return (new_str);
 }
 
@@ -71,7 +72,7 @@ char	*ft_strdup(const char *s1)
 
 char	*ft_strchr(const char *s, int c)
 {
-	if (!s || !c)
+	if (!s)
 		return (NULL);
 	while (s && *s)
 	{
