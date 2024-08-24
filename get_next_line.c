@@ -6,7 +6,7 @@
 /*   By: mbozan <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/23 14:55:14 by mbozan            #+#    #+#             */
-/*   Updated: 2024/08/21 23:19:18 by austrokebab      ###   ########.fr       */
+/*   Updated: 2024/08/22 13:50:59 by mbozan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "get_next_line.h"
@@ -55,7 +55,7 @@ ssize_t	readstore(int fd, char **storage)
 
 	if (!storage || !*storage)
 		return (-1);
-	buffer = (char *)malloc(BUFFER_SIZE + 1);
+	buffer = (char *)malloc((size_t)BUFFER_SIZE + 1);
 	if (!buffer)
 		return (-1);
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
@@ -75,7 +75,7 @@ ssize_t	readstore(int fd, char **storage)
 
 char	*get_next_line(int fd)
 {
-	static char	*storage = NULL;
+	static char	*storage;
 	char		*line;
 	ssize_t		bytes_read;
 
@@ -87,7 +87,7 @@ char	*get_next_line(int fd)
 		if (!storage)
 			return (NULL);
 	}
-	while (!storage || !ft_strchr(storage, '\n'))
+	while (!ft_strchr(storage, '\n'))
 	{
 		bytes_read = readstore(fd, &storage);
 		if (bytes_read < 0 || (bytes_read == 0 && !*storage))
@@ -96,5 +96,7 @@ char	*get_next_line(int fd)
 			break ;
 	}
 	line = extractline(&storage);
+	if (line && (!storage || !*storage))
+		nullfree(&storage);
 	return (line);
 }
